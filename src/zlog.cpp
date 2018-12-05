@@ -76,10 +76,10 @@ int nDebugLogInit(int argc, char** argv)
     //set log priority
     char sOptVal[64] = "";
     memset(sOptVal, 0, sizeof(sOptVal));
-    nRet = nOptInfo(argc, argv, "D", sOptVal, sizeof(sOptVal));
+    nRet = nOptInfo(argc, argv, "D:", sOptVal, sizeof(sOptVal));
     if(0 == nRet)
     {
-       nLogPriority = nSetDebugPriority(sOptval) 
+       nLogPriority = nSetDebugPriority(sOptVal);
     }
 
     //create log file
@@ -111,10 +111,10 @@ int nSetLogType(char* pLogInfo, size_t nSize, const int nPriority)
     switch(nPriority)
     {
         case LOG_DEBUG:
-            sprintf(pLogInfo, "D ");
+            sprintf(pLogInfo, "[D] ");
             break;
         default:
-            sprintf(pLogInfo, "E ");
+            sprintf(pLogInfo, "[E] ");
             break;
     }
     return 0;
@@ -181,6 +181,7 @@ int nOptInfo(int argc, char** argv, const char* sOpt, char* sOptVal, unsigned in
 {
     int nRet = 0;
     int nOpt = getopt(argc, argv, sOpt);
+    printf("%d\t%s\n%d\t%s\n", argc, *argv, nOpt, optarg);
     if(-1 != nOpt)
     {
         strncpy(sOptVal, optarg, nSize);
@@ -189,19 +190,19 @@ int nOptInfo(int argc, char** argv, const char* sOpt, char* sOptVal, unsigned in
     {
        nRet = -1; 
     }
-    printf("%s:%s", sOpt, sOptVal);
     return nRet;
 }
 
 int nSetDebugPriority(const char* sOptVal)
 {
     int nPriority = 0;
-    switch(sOptStr)
+    int nDebug = atoi(sOptVal);
+    switch(nDebug)
     {
-        case "DEBUG":
+        case LOG_DEBUG:
             nPriority = LOG_DEBUG;
             break;
-        case "ERROR":
+        case LOG_ERROR:
         default:
             nPriority = LOG_ERROR;
             break;
@@ -213,7 +214,7 @@ int nSetDebugPriority(const char* sOptVal)
 int nInit(int argc, char** argv)
 {
   
-    nDebugLogInit(sProgramName); 
+    nDebugLogInit(argc, argv); 
     return 0;
 }
 
